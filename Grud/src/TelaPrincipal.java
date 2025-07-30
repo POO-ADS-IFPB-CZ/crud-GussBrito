@@ -117,15 +117,30 @@ public class TelaPrincipal extends JFrame {
             String descricao = txtDescricao.getText();
             double preco = Double.parseDouble(txtPreco.getText());
 
-            if (descricao.isEmpty()) {
+            if (descricao.trim().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "A descrição não pode ser vazia.", "Erro", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            Produto p = new Produto(codigo, descricao, preco);
-            produtoDao.adicionarProduto(p);
-            atualizarTabela();
-            limparCampos();
+            Produto novoProduto = new Produto(codigo, descricao, preco);
+
+            // Chama o metodo do DAO e guarda a resposta (true ou false)
+            boolean sucesso = produtoDao.adicionarProduto(novoProduto);
+
+            // Verifica a resposta
+            if (sucesso) {
+                // Se deu certo, atualiza a tela como antes
+                atualizarTabela();
+                limparCampos();
+            } else {
+                // Se falhou, mostra o aviso de código duplicado
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Já existe um produto com este código. A adição foi cancelada.",
+                        "Erro de Duplicidade",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Código e Preço devem ser números válidos.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
